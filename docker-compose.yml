@@ -1,0 +1,21 @@
+# Runs the prototype locally at http://localhost:8080
+#
+#   docker compose up -d
+#
+# It's a static site: nginx serves ./site with the config in ./nginx
+# (permanent /n/<slug> notice links, framing rules, noindex, /healthz).
+
+services:
+  status-prototype:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
